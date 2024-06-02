@@ -9,10 +9,6 @@
 
 #define EEPROM_SIZE 68
 
-// put function declarations here:
-
-int HTTP_PORT = 80;
-
 typedef struct {
   char NETWORK_SSID[32];
   char NETWORK_PWD[32];
@@ -41,14 +37,14 @@ void setup() {
   Serial.println("----ESP8266 AUDI CLUSTER FIRMWARE SERIAL----");
   Serial.println("Booting...");
 
-  pinMode(SHIFT_CLK, OUTPUT);
-  pinMode(SHIFT_DATA, OUTPUT);
+  pinMode(SHIFT_CLK_PIN, OUTPUT);
+  pinMode(SHIFT_DATA_PIN, OUTPUT);
   pinMode(0, OUTPUT);
 
   Serial.println("Initializing mock eeprom using flash memory with size " + String(EEPROM_SIZE + 1));
   EEPROM.begin(EEPROM_SIZE + 1);
 
-  int AP_MODE = EEPROM.read(EEPROM_SIZE);
+  const int AP_MODE = EEPROM.read(EEPROM_SIZE);
 
   if(AP_MODE == 1) { 
     Serial.println("Skipping network load, going into AP mode.");

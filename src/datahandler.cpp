@@ -5,28 +5,19 @@
 
 extern CLUSTER_DATA cluster_data;
 
-bool impulseONS = false;
 int previousMicros = 0;
 int previousMicrosShift = 0;
 int previousMicrosT = 0;
 
-float SPEEDO_FREQ = 1.14f; // per km/h
-float TACHO_FREQ  = 0.058f; // per 1 rev
-
-int SHIFT_CLK = 5;
-int SHIFT_DATA = 4;
-
-int FUEL_PIN = 0;
-
 uint8_t shift_values = 0;
 
-void update_speed_delay(int speed) {
+void updateSpeedoDelay(int speed) {
     float frequency = speed * SPEEDO_FREQ;
     float period = 1 / frequency;
     cluster_data.speedoDelay = period * 1000000;
 }
 
-void update_tacho_delay(int revs) {
+void updateTachoDelay(int revs) {
     float frequencyT = revs * TACHO_FREQ;
     float periodT = 1 / frequencyT;
 
@@ -47,13 +38,13 @@ void pushToShift() {
     */
     unsigned long currentMicros = micros();
     if (currentMicros - previousMicros >= 2000)
-    shiftOut(SHIFT_DATA, SHIFT_CLK, MSBFIRST, shift_values);
+    shiftOut(SHIFT_DATA_PIN, SHIFT_CLK_PIN, MSBFIRST, shift_values);
 }
 
 void handleData() {
     noInterrupts();
     if(pulseSpeedo() or pulseTacho()) {
-        shiftOut(SHIFT_DATA, SHIFT_CLK, MSBFIRST, shift_values); 
+        shiftOut(SHIFT_DATA_PIN, SHIFT_CLK_PIN, MSBFIRST, shift_values); 
     } // execute only on state change
     //pulseTacho();
     outputFuel(); // doesn't utilise a shift register, so no need to shift out
@@ -81,7 +72,7 @@ int pulseTacho() {
     {
         previousMicrosT = currentMicros;
         bitWrite(shift_values, TACHO_PIN, !bitRead(shift_values, TACHO_PIN));
-        //shiftOut(SHIFT_DATA, SHIFT_CLK, MSBFIRST, shift_values);
+        //shiftOut(SHIFT_DATA_PIN, SHIFT_CLK_PIN, MSBFIRST, shift_values);
         return 1; 
     }
     return 0;
